@@ -15,7 +15,7 @@ library(tidyverse)
 # Загружаем исходный набор данных из Excel таблицы
 ```{r echo=FALSE}
 
-df1 <- read_csv("data/raw/source.csv")
+df <- read_csv("data/raw/source.csv")
 
 ```
 
@@ -26,32 +26,32 @@ df1 <- read_csv("data/raw/source.csv")
 
 <!-- ВАЖНО - intergrowth21 начинается с 24 недели гестации -->
 
-**!!!Приведён случайный датафрейм df3!!!**
+**!!!Приведён случайный датафрейм df!!!**
 ```{r}
 # Создаём новые колонки для счёта ниже 3 и выше 97перцентиля по весу тела (BW), длине тела (BL) и отношению веса к длине (WLR)
-df3$BW3Score<-c(NA) #Вес тела 3 перцентиль
-df3$BW97Score<-c(NA) #Вес тела 97 перцентиль
-df3$BL3Score<-c(NA) #Длина тела 3 перцентиль
-df3$BL97Score<-c(NA) #Длина тела 97 перцентиль
-df3$WLR3Score<-c(NA) #Отношение вес тела : длина тела 3 перцентиль
-df3$WLR97Score<-c(NA) #Отношение вес тела : длина тела 97 перцентиль
+df$BW3Score<-c(NA) #Вес тела 3 перцентиль
+df$BW97Score<-c(NA) #Вес тела 97 перцентиль
+df$BL3Score<-c(NA) #Длина тела 3 перцентиль
+df$BL97Score<-c(NA) #Длина тела 97 перцентиль
+df$WLR3Score<-c(NA) #Отношение вес тела : длина тела 3 перцентиль
+df$WLR97Score<-c(NA) #Отношение вес тела : длина тела 97 перцентиль
 
 # Считаем для наших данных WLR
-df3$WLR<-round((df3$BodyWeight/df3$BodyLength)/10, digits = 2)
+df$WLR<-round((df$BodyWeight/df$BodyLength)/10, digits = 2)
 
 
 # Загружаем данные для сравнения по 3 и 97 перцентилю. Значения соответвуют week+6, т.е максимальное для недли гестации.
-intergrowthMAX <- read_csv("data/raw/intergrowthMAX.csv")
+intergrowth <- read_csv("data/raw/intergrowthMAX.csv")
 
 
 #Задаём счёт случаям меньше BodyWeight 3 перцентиля
-for(j in 1:nrow(df3)){
-  for(k in 1:nrow(intergrwoth)){
-    if(df3$gestation[j] == intergrwoth$gestation[k] && df3$gender[j] == intergrwoth$gender[k]){
-      if(df3$BodyWeight[j] <= intergrwoth$BW_3th[k]){
-        df3$BW3Score[j] <- 1
+for(j in 1:nrow(df)){
+  for(k in 1:nrow(intergrowth)){
+    if(df$gestation[j] == intergrowth$gestation[k] && df$gender[j] == intergrowth$gender[k]){
+      if(df$BodyWeight[j] <= intergrowth$BW_3th[k]){
+        df$BW3Score[j] <- 1
       } else {
-        df3$BW3Score[j] <- 0
+        df$BW3Score[j] <- 0
       }
     }
   }
@@ -59,13 +59,13 @@ for(j in 1:nrow(df3)){
 
 
 #Задаём счёт случаям больше BodyLength 97 перцентиля
-for(l in 1:nrow(df3)){
-  for(m in 1:nrow(intergrwoth)){
-    if(df3$gestation[l] == intergrwoth$gestation[m] && df3$gender[l] == intergrwoth$gender[m]){
-      if(df3$BodyWeight[l] >= intergrwoth$BW_97th[m]){
-        df3$BW97Score[l] <- 1
+for(l in 1:nrow(df)){
+  for(m in 1:nrow(intergrowth)){
+    if(df$gestation[l] == intergrowth$gestation[m] && df$gender[l] == intergrowth$gender[m]){
+      if(df$BodyWeight[l] >= intergrowth$BW_97th[m]){
+        df$BW97Score[l] <- 1
       } else {
-        df3$BW97Score[l] <- 0
+        df$BW97Score[l] <- 0
       }
     }
   }
@@ -75,13 +75,13 @@ for(l in 1:nrow(df3)){
 rm(list = ls.str(mode = 'numeric'))
 
 #Задаём счёт случаям меньше BodyLength 3 перцентиля
-for(j in 1:nrow(df3)){
-  for(k in 1:nrow(intergrwoth)){
-    if(df3$gestation[j] == intergrwoth$gestation[k] && df3$gender[j] == intergrwoth$gender[k]){
-      if(df3$BodyLength[j] <= intergrwoth$BL_3th[k]){
-        df3$BL3Score[j] <- 1
+for(j in 1:nrow(df)){
+  for(k in 1:nrow(intergrowth)){
+    if(df$gestation[j] == intergrowth$gestation[k] && df$gender[j] == intergrowth$gender[k]){
+      if(df$BodyLength[j] <= intergrowth$BL_3th[k]){
+        df$BL3Score[j] <- 1
       } else {
-        df3$BL3Score[j] <- 0
+        df$BL3Score[j] <- 0
       }
     }
   }
@@ -89,13 +89,13 @@ for(j in 1:nrow(df3)){
 
 
 #Задаём счёт случаям больше BodyLength 97 перцентиля
-for(l in 1:nrow(df3)){
-  for(m in 1:nrow(intergrwoth)){
-    if(df3$gestation[l] == intergrwoth$gestation[m] && df3$gender[l] == intergrwoth$gender[m]){
-      if(df3$BodyLength[l] >= intergrwoth$BL_97th[m]){
-        df3$BL97Score[l] <- 1
+for(l in 1:nrow(df)){
+  for(m in 1:nrow(intergrowth)){
+    if(df$gestation[l] == intergrowth$gestation[m] && df$gender[l] == intergrowth$gender[m]){
+      if(df$BodyLength[l] >= intergrowth$BL_97th[m]){
+        df$BL97Score[l] <- 1
       } else {
-        df3$BL97Score[l] <- 0
+        df$BL97Score[l] <- 0
       }
     }
   }
@@ -106,13 +106,13 @@ rm(list = ls.str(mode = 'numeric'))
 
 
 #Задаём счёт случаям меньше WLR 3 перцентиля
-for(j in 1:nrow(df3)){
-  for(k in 1:nrow(intergrwoth)){
-    if(df3$gestation[j] == intergrwoth$gestation[k] && df3$gender[j] == intergrwoth$gender[k]){
-      if(df3$WLR[j] <= intergrwoth$WLR_3th[k]){
-        df3$WLR3Score[j] <- 1
+for(j in 1:nrow(df)){
+  for(k in 1:nrow(intergrowth)){
+    if(df$gestation[j] == intergrowth$gestation[k] && df$gender[j] == intergrowth$gender[k]){
+      if(df$WLR[j] <= intergrowth$WLR_3th[k]){
+        df$WLR3Score[j] <- 1
       } else {
-        df3$WLR3Score[j] <- 0
+        df$WLR3Score[j] <- 0
       }
     }
   }
@@ -120,13 +120,13 @@ for(j in 1:nrow(df3)){
 
 
 #Задаём счёт случаям больше WLR 97 перцентиля
-for(l in 1:nrow(df3)){
-  for(m in 1:nrow(intergrwoth)){
-    if(df3$gestation[l] == intergrwoth$gestation[m] && df3$gender[l] == intergrwoth$gender[m]){
-      if(df3$WLR[l] >= intergrwoth$WLR_97th[m]){
-        df3$WLR97Score[l] <- 1
+for(l in 1:nrow(df)){
+  for(m in 1:nrow(intergrowth)){
+    if(df$gestation[l] == intergrowth$gestation[m] && df$gender[l] == intergrowth$gender[m]){
+      if(df$WLR[l] >= intergrowth$WLR_97th[m]){
+        df$WLR97Score[l] <- 1
       } else {
-        df3$WLR97Score[l] <- 0
+        df$WLR97Score[l] <- 0
       }
     }
   }
@@ -136,28 +136,38 @@ for(l in 1:nrow(df3)){
 rm(list = ls.str(mode = 'numeric'))
 
 # Сложить результаты
-df3$score <- df3$BW3Score + df3$BW97Score + df3$BL3Score + df3$BL97Score + df3$WLR3Score + df3$WLR97Score
+df$score <- df$BW3Score + df$BW97Score + df$BL3Score + df$BL97Score + df$WLR3Score + df$WLR97Score
 
 #Удалить все строке в score не содержащие 0
-df3 <- filter(df3, score == 0)
+# df <- filter(df, score == 0)
 
 # Удаляем лишние колонки
-df3 <- df3 %>% select(-c(BW3Score, BW97Score, score))
+# df <- df %>% select(-c(BW3Score, BW97Score, score))
 
 ```
 
 
 # Создаём колонки и заполняем расчётные коэффициенты
 ```{r}
-df$BrainLiver <- round(df$brain/df$liver, digits = 1) #BrainLiver =  мозг/печень
-df$PI <- round((df$`масса тела`/df$`длина тела`^3)*100, digits = 1) # расчитываем пондеральный индекс (PI)
-df$BrainBody <- round(df$мозг/df$`масса тела`, digits = 4)
-df$BMI
-df$BSA
-df$neoBSA
-df$BrainBody
-df$HeatrBody
-df$LungBody
+df$BrainLiver <- round(df$brain/df$liver, digits = 1) #BrainLiver =  мозг/печень. Альтенативное выявления FGR
+df$PI <- round((df$BodyWeight/df$BodyLength^3)*100, digits = 1) #расчитываем пондеральный индекс (PI). Аналог BMI
+df$BMI <- round((df$BodyWeight/df$BodyLength^2)/1000, digits = 1) 
+df$BSA_Du_Bois <- round(0.007184*((df$BodyWeight^0.425)/(df$BodyLength)))
+                        
+df$neoBSA <- 
+df$BrainBody <- round(df$brain/df$BodyWeight, digits = 4) #Отношение мозг:тело
+df$HeatrBody <- round(df$heart/df$BodyWeight, digits = 4) #Отношение сердце:тело
+df$LungBody <- round(df$lung/df$BodyWeight, digits = 4) #Отношение :тело
+df$LiverBody <- round(df$liver/df$BodyWeight, digits = 4) #Отношение мозг:тело
+df$SpleenBody <- round(df$spleen/df$BodyWeight, digits = 4) #Отношение мозг:тело
+df$KidneyBody <- round(df$kidney/df$BodyWeight, digits = 4) #Отношение мозг:тело
+df$ThymusBody <- round(df$thymus/df$BodyWeight, digits = 4) #Отношение мозг:тело
+df$AdrenalBody <- round(df$adrenal/df$BodyWeight, digits = 4) #Отношение мозг:тело
+df$PancreasBody <- round(df$pancreas/df$BodyWeight, digits = 4) #Отношение мозг:тело
+df$PlacentaBody <- round(df$PlacentaWeight/df$BodyWeight, digits = 2) #Отношение мозг:тело
+
+
+
 
 ```
 
