@@ -51,5 +51,6 @@ rsconnect/
 # Data Files
 *.RData
 
-# Interim folder
+# Folders
 data/interim/
+data/pics/
