@@ -52,5 +52,4 @@ rsconnect/
 *.RData
 
 # Folders
-data/interim/
-data/pics/
+
