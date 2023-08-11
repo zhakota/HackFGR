@@ -152,9 +152,10 @@ df$score <- df$BW3Score + df$BW97Score + df$BL3Score + df$BL97Score + df$WLR3Sco
 df$BrainLiver <- round(df$brain/df$liver, digits = 1) #BrainLiver =  мозг/печень. Альтенативное выявления FGR
 df$PI <- round((df$BodyWeight/df$BodyLength^3)*100, digits = 1) #расчитываем пондеральный индекс (PI). Аналог BMI
 df$BMI <- round((df$BodyWeight/df$BodyLength^2)/1000, digits = 1) 
-df$BSA_Du_Bois <- round(0.007184*((df$BodyWeight^0.425)/(df$BodyLength)))
+df$BSA_Du_Bois <- round(0.007184*(((df$BodyWeight^0.425))/1000)/(df$BodyLength)))) # Что-то напутал со скобками. Оригинал формулы BSA = 0.007184 × W^0.425 × H^0.725 W в килограммах 
                         
 df$neoBSA <- 
+
 df$BrainBody <- round(df$brain/df$BodyWeight, digits = 4) #Отношение мозг:тело
 df$HeatrBody <- round(df$heart/df$BodyWeight, digits = 4) #Отношение сердце:тело
 df$LungBody <- round(df$lung/df$BodyWeight, digits = 4) #Отношение :тело
