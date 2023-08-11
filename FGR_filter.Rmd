@@ -1,0 +1,195 @@
+---
+title: "FGR_filter"
+author: "Dmitrii"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readr)
+library(tidyverse)
+
+```
+
+# Загружаем исходный набор данных из Excel таблицы
+```{r echo=FALSE}
+
+df1 <- read_csv("data/raw/source.csv")
+
+```
+
+# Исключаем крайние значения по критериям ISUOG 
+
+<!-- <3th percentile == FGR и >97th percentile == macrosomia -->
+<!-- Основа для фильтрации данные исследования intergrowth 21 <https://intergrowth21.tghn.org/standards-tools/>  -->
+
+<!-- ВАЖНО - intergrowth21 начинается с 24 недели гестации -->
+
+**!!!Приведён случайный датафрейм df3!!!**
+```{r}
+# Создаём новые колонки для счёта ниже 3 и выше 97перцентиля по весу тела (BW), длине тела (BL) и отношению веса к длине (WLR)
+df3$BW3Score<-c(NA) #Вес тела 3 перцентиль
+df3$BW97Score<-c(NA) #Вес тела 97 перцентиль
+df3$BL3Score<-c(NA) #Длина тела 3 перцентиль
+df3$BL97Score<-c(NA) #Длина тела 97 перцентиль
+df3$WLR3Score<-c(NA) #Отношение вес тела : длина тела 3 перцентиль
+df3$WLR97Score<-c(NA) #Отношение вес тела : длина тела 97 перцентиль
+
+# Считаем для наших данных WLR
+df3$WLR<-round((df3$BodyWeight/df3$BodyLength)/10, digits = 2)
+
+
+# Загружаем данные для сравнения по 3 и 97 перцентилю. Значения соответвуют week+6, т.е максимальное для недли гестации.
+intergrowthMAX <- read_csv("data/raw/intergrowthMAX.csv")
+
+
+#Задаём счёт случаям меньше BodyWeight 3 перцентиля
+for(j in 1:nrow(df3)){
+  for(k in 1:nrow(intergrwoth)){
+    if(df3$gestation[j] == intergrwoth$gestation[k] && df3$gender[j] == intergrwoth$gender[k]){
+      if(df3$BodyWeight[j] <= intergrwoth$BW_3th[k]){
+        df3$BW3Score[j] <- 1
+      } else {
+        df3$BW3Score[j] <- 0
+      }
+    }
+  }
+}
+
+
+#Задаём счёт случаям больше BodyLength 97 перцентиля
+for(l in 1:nrow(df3)){
+  for(m in 1:nrow(intergrwoth)){
+    if(df3$gestation[l] == intergrwoth$gestation[m] && df3$gender[l] == intergrwoth$gender[m]){
+      if(df3$BodyWeight[l] >= intergrwoth$BW_97th[m]){
+        df3$BW97Score[l] <- 1
+      } else {
+        df3$BW97Score[l] <- 0
+      }
+    }
+  }
+}
+
+#Очистить все Values
+rm(list = ls.str(mode = 'numeric'))
+
+#Задаём счёт случаям меньше BodyLength 3 перцентиля
+for(j in 1:nrow(df3)){
+  for(k in 1:nrow(intergrwoth)){
+    if(df3$gestation[j] == intergrwoth$gestation[k] && df3$gender[j] == intergrwoth$gender[k]){
+      if(df3$BodyLength[j] <= intergrwoth$BL_3th[k]){
+        df3$BL3Score[j] <- 1
+      } else {
+        df3$BL3Score[j] <- 0
+      }
+    }
+  }
+}
+
+
+#Задаём счёт случаям больше BodyLength 97 перцентиля
+for(l in 1:nrow(df3)){
+  for(m in 1:nrow(intergrwoth)){
+    if(df3$gestation[l] == intergrwoth$gestation[m] && df3$gender[l] == intergrwoth$gender[m]){
+      if(df3$BodyLength[l] >= intergrwoth$BL_97th[m]){
+        df3$BL97Score[l] <- 1
+      } else {
+        df3$BL97Score[l] <- 0
+      }
+    }
+  }
+}
+
+#Очистиить все Values
+rm(list = ls.str(mode = 'numeric'))
+
+
+#Задаём счёт случаям меньше WLR 3 перцентиля
+for(j in 1:nrow(df3)){
+  for(k in 1:nrow(intergrwoth)){
+    if(df3$gestation[j] == intergrwoth$gestation[k] && df3$gender[j] == intergrwoth$gender[k]){
+      if(df3$WLR[j] <= intergrwoth$WLR_3th[k]){
+        df3$WLR3Score[j] <- 1
+      } else {
+        df3$WLR3Score[j] <- 0
+      }
+    }
+  }
+}
+
+
+#Задаём счёт случаям больше WLR 97 перцентиля
+for(l in 1:nrow(df3)){
+  for(m in 1:nrow(intergrwoth)){
+    if(df3$gestation[l] == intergrwoth$gestation[m] && df3$gender[l] == intergrwoth$gender[m]){
+      if(df3$WLR[l] >= intergrwoth$WLR_97th[m]){
+        df3$WLR97Score[l] <- 1
+      } else {
+        df3$WLR97Score[l] <- 0
+      }
+    }
+  }
+}
+
+#Очистиить все Values
+rm(list = ls.str(mode = 'numeric'))
+
+# Сложить результаты
+df3$score <- df3$BW3Score + df3$BW97Score + df3$BL3Score + df3$BL97Score + df3$WLR3Score + df3$WLR97Score
+
+#Удалить все строке в score не содержащие 0
+df3 <- filter(df3, score == 0)
+
+# Удаляем лишние колонки
+df3 <- df3 %>% select(-c(BW3Score, BW97Score, score))
+
+```
+
+
+# Создаём колонки и заполняем расчётные коэффициенты
+```{r}
+df$BrainLiver <- round(df$brain/df$liver, digits = 1) #BrainLiver =  мозг/печень
+df$PI <- round((df$`масса тела`/df$`длина тела`^3)*100, digits = 1) # расчитываем пондеральный индекс (PI)
+df$BrainBody <- round(df$мозг/df$`масса тела`, digits = 4)
+df$BMI
+df$BSA
+df$neoBSA
+df$BrainBody
+df$HeatrBody
+df$LungBody
+
+```
+
+# Фильтр преполагаемого ЗРП(FGR) по массе мога и печени
+```{r eval=FALSE, include=FALSE}
+# Задаём счёт FGR по формуле (тонкий фильтр по неделям)
+for (i in 1:nrow(df3)) {
+  if (df3$gestation[i] <= 28 & df3$BrainLiver[i] > 3.7) {
+    df3$BrainLiverScore[i] <- 1
+  } else if (df3$gestation[i] > 28 & df3$BrainLiver[i] > 3.0) {
+    df3$BrainLiverScore[i] <- 1
+  } else {
+    df3$BrainLiverScore[i] <- 0
+  }
+}
+
+
+#Удаляем потенциальные FGR если BrainLiver удовлетворяет условиям (тонкий фильтр по неделям)
+removed_3_BrainLiver <- data.frame()
+df4 <- data.frame()
+
+for (i in 1:nrow(df3)) {
+  if (!is.na(df3$gestation[i]) & !is.na(df3$BrainLiver[i])) {
+    if (df3$gestation[i] <= 28 & df3$BrainLiver[i] > 3.7) {
+      removed_3_BrainLiver <- rbind(removed_3_BrainLiver, df3[i,])
+      df3 <- df3[-i,]
+    } else if (df3$gestation[i] > 28 & df3$BrainLiver[i] > 3.0) {
+      removed_3_BrainLiver <- rbind(removed_3_BrainLiver, df3[i,])
+      df3 <- df3[-i,]
+    } else {
+      df4 <- rbind(df4, df3[i,])
+    }
+  }
+} 
+```
