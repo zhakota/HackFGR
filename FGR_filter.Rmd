@@ -191,20 +191,20 @@ for (i in 1:nrow(df)) {
 
 
 #Удаляем потенциальные FGR если BrainLiver удовлетворяет условиям (тонкий фильтр по неделям)
-removed_BrainLiver <- data.frame()
-df2 <- data.frame()
-
-for (i in 1:nrow(df)) {
-  if (!is.na(df$gestation[i]) & !is.na(df$BrainLiver[i])) {
-    if (df$gestation[i] <= 28 & df$BrainLiver[i] > 3.7) {
-      removed_3_BrainLiver <- rbind(removed_3_BrainLiver, df[i,])
-      df <- df[-i,]
-    } else if (df$gestation[i] > 28 & df$BrainLiver[i] > 3.0) {
-      removed_3_BrainLiver <- rbind(removed_3_BrainLiver, df[i,])
-      df <- df[-i,]
-    } else {
-      df2 <- rbind(df2, df[i,])
-    }
-  }
-} 
+# removed_BrainLiver <- data.frame()
+# df2 <- data.frame()
+# 
+# for (i in 1:nrow(df)) {
+#   if (!is.na(df$gestation[i]) & !is.na(df$BrainLiver[i])) {
+#     if (df$gestation[i] <= 28 & df$BrainLiver[i] > 3.7) {
+#       removed_3_BrainLiver <- rbind(removed_3_BrainLiver, df[i,])
+#       df <- df[-i,]
+#     } else if (df$gestation[i] > 28 & df$BrainLiver[i] > 3.0) {
+#       removed_3_BrainLiver <- rbind(removed_3_BrainLiver, df[i,])
+#       df <- df[-i,]
+#     } else {
+#       df2 <- rbind(df2, df[i,])
+#     }
+#   }
+# } 
 ```
