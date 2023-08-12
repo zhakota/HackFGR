@@ -6,6 +6,7 @@ library(ggsci)
 library(wesanderson)
 library(meta)
 library(strucchange)
+library(readr)
 
 
 
@@ -13,6 +14,10 @@ library(strucchange)
 setwd("C:/Users/HP/Desktop/Hackaton")
 
 soure_data <- read.csv('no_na_no_outliers.csv', sep=",")
+
+soure_data <- read_csv("data/raw/outleirs_to_na.csv") # Загручкая из data/raw
+
+
 
 mean_source <- soure_data %>% group_by(gender, gestation) %>% summarize(Mean_wg = mean(BodyWeight), 
                                                                        sd_wg = sd(BodyWeight)) %>% 
@@ -35,6 +40,9 @@ mean_source_renamed <- data.frame(GA._w=mean_source$gestation, Mean_BodyWeight =
 
 #Uploading data from publications
 summary_data_raw <- read.csv('All_data_comparisions.csv', sep=";")
+
+summary_data_raw <- read.csv("data/raw/All_data_comparisions.csv", sep=";") # Загрузка из raw
+
 summary_data_raw$Mean_BodyWeight <- as.numeric(summary_data_raw$Mean_BodyWeight)
 
 summary_data_raw <- summary_data_raw[!(summary_data_raw$Study=='Salomon' & summary_data_raw$Gender=='overall'),]
@@ -268,6 +276,22 @@ m31 <- metamean(n_sample , Mean_BodyWeight , SD_BodyWeight,
 
 forest(m31)
 forest(m38)
+
+m24 <- metamean(n_sample , Mean_BodyWeight , SD_BodyWeight, 
+                studlab=Method, data=test_overall[test_overall$GA._w=='24',])
+m27 <- metamean(n_sample , Mean_BodyWeight , SD_BodyWeight, 
+                studlab=Method, data=test_overall[test_overall$GA._w=='27',])
+m30 <- metamean(n_sample , Mean_BodyWeight , SD_BodyWeight, 
+                studlab=Method, data=test_overall[test_overall$GA._w=='30',])
+m33 <- metamean(n_sample , Mean_BodyWeight , SD_BodyWeight, 
+                studlab=Method, data=test_overall[test_overall$GA._w=='33',])
+
+forest(m27)
+forest(m30)
+forest(m33)
+forest(m33)
+
+
 #5//11
 
 
