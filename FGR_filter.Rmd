@@ -151,10 +151,12 @@ df$score <- df$BW3Score + df$BW97Score + df$BL3Score + df$BL97Score + df$WLR3Sco
 ```{r}
 df$BrainLiver <- round(df$brain/df$liver, digits = 1) #BrainLiver =  мозг/печень. Альтенативное выявления FGR
 df$PI <- round((df$BodyWeight/df$BodyLength^3)*100, digits = 1) #расчитываем пондеральный индекс (PI). Аналог BMI
-df$BMI <- round((df$BodyWeight/df$BodyLength^2)/1000, digits = 1) 
-df$BSA_Du_Bois <- round(0.007184*(((df$BodyWeight^0.425))/1000)/(df$BodyLength)))) # Что-то напутал со скобками. Оригинал формулы BSA = 0.007184 × W^0.425 × H^0.725 W в килограммах 
-                        
-df$neoBSA <- 
+df$BMI <- round(((df$BodyWeight/1000)/df$BodyLength^2), digits = 4) 
+#df$BSA_Du_Bois <- round(0.007184*(df$BodyWeight^0.425/1000)*df$BodyLength^0.725)) # Что-то напутал со скобками. Оригинал формулы BSA = 0.007184 × W^0.425 × H^0.725 W в килограммах 
+
+df$BSA_Du_Bois <- round((71.84*df$BodyWeight^0.425*df$BodyLength^0.725), digits = 1) #Модифицированная из статьи Ahn PMID 21874709
+df$BSA_Boyd <- round((4.688*df$BodyLength^(0.8168-0.0154*log(df$BodyWeight))), digits = 1) #Модифицированная из статьи Ahn PMID 21874709
+df$BSA_neo <-  round((5.52005*df$BodyWeight^0.5526*df$BodyLength^0.3800), digits = 1) #Оригинаяльная из статьи Ahn PMID 21874709
 
 df$BrainBody <- round(df$brain/df$BodyWeight, digits = 4) #Отношение мозг:тело
 df$HeatrBody <- round(df$heart/df$BodyWeight, digits = 4) #Отношение сердце:тело
@@ -174,32 +176,34 @@ df$PlacentaBody <- round(df$PlacentaWeight/df$BodyWeight, digits = 2) #Отно�
 
 # Фильтр преполагаемого ЗРП(FGR) по массе мога и печени
 ```{r eval=FALSE, include=FALSE}
+df$BrainLiverScore <- c(NA)
+
 # Задаём счёт FGR по формуле (тонкий фильтр по неделям)
-for (i in 1:nrow(df3)) {
-  if (df3$gestation[i] <= 28 & df3$BrainLiver[i] > 3.7) {
-    df3$BrainLiverScore[i] <- 1
-  } else if (df3$gestation[i] > 28 & df3$BrainLiver[i] > 3.0) {
-    df3$BrainLiverScore[i] <- 1
+for (i in 1:nrow(df)) {
+  if (df$gestation[i] <= 28 & df$BrainLiver[i] > 3.7) {
+    df$BrainLiverScore[i] <- 1
+  } else if (df$gestation[i] > 28 & df$BrainLiver[i] > 3.0) {
+    df$BrainLiverScore[i] <- 1
   } else {
-    df3$BrainLiverScore[i] <- 0
+    df$BrainLiverScore[i] <- 0
   }
 }
 
 
 #Удаляем потенциальные FGR если BrainLiver удовлетворяет условиям (тонкий фильтр по неделям)
-removed_3_BrainLiver <- data.frame()
-df4 <- data.frame()
+removed_BrainLiver <- data.frame()
+df2 <- data.frame()
 
-for (i in 1:nrow(df3)) {
-  if (!is.na(df3$gestation[i]) & !is.na(df3$BrainLiver[i])) {
-    if (df3$gestation[i] <= 28 & df3$BrainLiver[i] > 3.7) {
-      removed_3_BrainLiver <- rbind(removed_3_BrainLiver, df3[i,])
-      df3 <- df3[-i,]
-    } else if (df3$gestation[i] > 28 & df3$BrainLiver[i] > 3.0) {
-      removed_3_BrainLiver <- rbind(removed_3_BrainLiver, df3[i,])
-      df3 <- df3[-i,]
+for (i in 1:nrow(df)) {
+  if (!is.na(df$gestation[i]) & !is.na(df$BrainLiver[i])) {
+    if (df$gestation[i] <= 28 & df$BrainLiver[i] > 3.7) {
+      removed_3_BrainLiver <- rbind(removed_3_BrainLiver, df[i,])
+      df <- df[-i,]
+    } else if (df$gestation[i] > 28 & df$BrainLiver[i] > 3.0) {
+      removed_3_BrainLiver <- rbind(removed_3_BrainLiver, df[i,])
+      df <- df[-i,]
     } else {
-      df4 <- rbind(df4, df3[i,])
+      df2 <- rbind(df2, df[i,])
     }
   }
 } 
