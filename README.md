@@ -3,10 +3,7 @@ The repository with working scripts, figures, and raw data used for testing auxo
 <br/><br/>
 Team Lead: Dmitrii Zhakota
 
-Team Members:
-Ruslan Alagov
-Yury Malovichko
-Anton Shikov
+Team Members:Ruslan Alagov, Yury Malovichko, Anton Shikov
 <br/><br/>
 <br/><br/>
 Bioinformatics Hackathon'2023
