@@ -8,7 +8,7 @@ library(meta)
 library(strucchange)
 
 #Source data acquisition
-soure_data <- read_csv("data/raw/outleirs_to_na.csv") 
+soure_data <- read.csv("data/raw/outleirs_to_na.csv") 
 
 
 mean_source <- soure_data %>% group_by(gender, gestation) %>% summarize(Mean_wg = mean(BodyWeight), 
@@ -501,3 +501,30 @@ ggplot(data=for_metamean[for_metamean$GA._w=='33',],
   xlab("Body weight")
 
 #5//10
+
+
+#Plot KS test p-values when comparing genders from source data
+pvals_source <- read.csv("data/raw/auxology_comparison_by_gender.tsv", sep ='\t') 
+
+ggplot(pvals_source, aes( y=Week, x=pvals_source$KS.p.val_b2g, color=Organ)) +
+  geom_point(size=2)+
+  geom_vline(xintercept = 0.05, size=1.1, color='darkgrey')+
+  theme_bw()+
+  theme(axis.title.x=element_text(face="bold", color="black", 
+                                  size=16),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black"),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        axis.text.y = element_text(color='black', 
+                                   size=12),
+        axis.title.y = element_text(face="bold", color="black", 
+                                    size=16),
+        legend.title=element_text(face="bold",size=14), 
+        legend.text=element_text(size=12),
+        axis.text.x = element_text(color='black', 
+                                   angle = 60, vjust = 1, 
+                                   size = 12, hjust = 1))+
+  ylab('Gestation week')+
+  xlab("P-value")+
+  scale_color_manual(values = wes_palette("Darjeeling2", 11, type = "continuous"))
